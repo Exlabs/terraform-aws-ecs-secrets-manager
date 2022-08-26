@@ -9,7 +9,8 @@ This module uses the recommended way of passing sensitive data from SecretManage
 ```hcl
 module "secrets" {
   source  = "exlabs/ecs-secrets-manager/aws"
-
+  # We recommend pinning every module to a specific version
+  # version     = "x.x.x"
   name = "data-pipeline-secrets"
   ecs_task_execution_role = "ecs-task-execution-role"
 
@@ -36,11 +37,24 @@ resource "aws_ecs_task_definition" "data_pipeline" {
 
 After `terraform apply` you have to go to the AWS Console SecretsManager dashboard, select created secret and set values by creating a key-value pair for each defined key name.
 
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.30.0 |
+
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.30.0 |
+
+## Modules
+
+No modules.
 
 ## Resources
 
@@ -54,11 +68,11 @@ After `terraform apply` you have to go to the AWS Console SecretsManager dashboa
 
 ## Inputs
 
-| Name                                                                                                          | Description | Type | Default | Required |
-|---------------------------------------------------------------------------------------------------------------|-------------|------|---------|:--------:|
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
 | <a name="input_ecs_task_execution_role"></a> [ecs\_task\_execution\_role](#input\_ecs\_task\_execution\_role) | ECS task execution role name | `string` | n/a | yes |
-| <a name="input_name"></a> [name](#input\_name)                                                                | AWS SecretsManager secret name | `string` | n/a | yes |
-| <a name="input_key_names"></a> [key\_names](#input\_key\_names)                                               | Secret names that will be injected as env variables | `list(string)` | n/a | yes |
+| <a name="input_key_names"></a> [key\_names](#input\_key\_names) | Secret names that will be injected as env variables | `list(string)` | n/a | yes |
+| <a name="input_name"></a> [name](#input\_name) | AWS SecretsManager secret name | `string` | n/a | yes |
 
 ## Outputs
 
