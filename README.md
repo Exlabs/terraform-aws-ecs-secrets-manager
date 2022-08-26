@@ -2,7 +2,7 @@
 
 Terraform module to create a SecretManager secret and generate secrets definition to be injected in the ECS Container definition.
 
-This module uses the recommended way of passing sensitive data from SecretManager to ECS Task without hardcoding any sensitive data in the ECS Container definition.
+This module uses the recommended way of passing sensitive data from SecretManager to ECS Task without hardcoding any sensitive values in the ECS Container definition.
 
 ## Usage
 
@@ -13,7 +13,7 @@ module "secrets" {
   name = "data-pipeline-secrets"
   ecs_task_execution_role = "ecs-task-execution-role"
 
-  secret_names = [
+  key_names = [
     "STRIPE_PUBLIC_KEY",
     "STRIPE_SECRET_KEY",
     "STRIPE_WEBHOOK_SECRET"
@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "data_pipeline" {
 }
 ```
 
-After `terraform apply` you have to go to the AWS Console SecretsManager dashboard, select created secret and set values by creating a key-value pair for each defined secret name.
+After `terraform apply` you have to go to the AWS Console SecretsManager dashboard, select created secret and set values by creating a key-value pair for each defined key name.
 
 ## Providers
 
@@ -54,11 +54,11 @@ After `terraform apply` you have to go to the AWS Console SecretsManager dashboa
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| Name                                                                                                          | Description | Type | Default | Required |
+|---------------------------------------------------------------------------------------------------------------|-------------|------|---------|:--------:|
 | <a name="input_ecs_task_execution_role"></a> [ecs\_task\_execution\_role](#input\_ecs\_task\_execution\_role) | ECS task execution role name | `string` | n/a | yes |
-| <a name="input_name"></a> [name](#input\_name) | AWS SecretsManager secret name | `string` | n/a | yes |
-| <a name="input_secret_names"></a> [secret\_names](#input\_secret\_names) | Secret names that will be injected as env variables | `list(string)` | n/a | yes |
+| <a name="input_name"></a> [name](#input\_name)                                                                | AWS SecretsManager secret name | `string` | n/a | yes |
+| <a name="input_key_names"></a> [key\_names](#input\_key\_names)                                               | Secret names that will be injected as env variables | `list(string)` | n/a | yes |
 
 ## Outputs
 

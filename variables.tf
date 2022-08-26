@@ -8,7 +8,7 @@ variable "ecs_task_execution_role" {
   type = string
 }
 
-variable "secret_names" {
+variable "key_names" {
   description = "Secret names that will be injected as env variables"
   type = list(string)
 }

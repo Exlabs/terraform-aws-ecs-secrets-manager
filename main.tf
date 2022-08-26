@@ -51,9 +51,9 @@ resource aws_iam_role_policy_attachment secret_access {
 
 locals {
   ecs_secrets = [
-    for secret_name in var.secret_names :{
-      name = secret_name
-      valueFrom = "${aws_secretsmanager_secret.default.arn}:${secret_name}::"
+    for key_name in var.key_names :{
+      name = key_name
+      valueFrom = "${aws_secretsmanager_secret.default.arn}:${key_name}::"
     }
   ]
 }
