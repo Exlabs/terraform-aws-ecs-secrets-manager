@@ -23,6 +23,9 @@ resource "aws_secretsmanager_secret" "default" {
 }
 
 resource aws_iam_policy secrets_access {
+  name        = "secrets_access"
+  description = "Access rights to SecretsManager Secret created by terraform-aws-ecs-secrets-manager module"
+
   policy = <<-POLICY
   {
      "Version": "2012-10-17",
