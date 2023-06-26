@@ -22,8 +22,12 @@ resource "aws_secretsmanager_secret" "default" {
   policy = data.aws_iam_policy_document.secrets_policy.json
 }
 
+resource "random_id" "secrets_access_policy_suffix" {
+  byte_length = 8
+}
+
 resource aws_iam_policy secrets_access {
-  name        = "secrets_access"
+  name        = "secrets_access_${random_id.secrets_access_policy_suffix.hex}"
   description = "Access rights to SecretsManager Secret created by terraform-aws-ecs-secrets-manager module"
 
   policy = <<-POLICY
