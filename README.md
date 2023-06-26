@@ -45,12 +45,14 @@ After `terraform apply` you have to go to the AWS Console SecretsManager dashboa
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.30.0 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.5.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.30.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | >= 3.5.0 |
 
 ## Modules
 
@@ -61,6 +63,7 @@ No modules.
 | Name | Type |
 |------|------|
 | [aws_iam_policy.secrets_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [random_id.secrets_access_policy_suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
 | [aws_iam_role_policy_attachment.secret_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_secretsmanager_secret.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_iam_policy_document.secrets_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
