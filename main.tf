@@ -1,66 +1,43 @@
-data "aws_iam_role" "ecs_task_execution_role" {
-  name = var.ecs_task_execution_role
+resource "aws_secretsmanager_secret" "this" {
+  name        = var.name
+  description = var.description
 }
 
-data aws_iam_policy_document secrets_policy {
-  statement {
-    effect = "Allow"
-    principals {
-      identifiers = [data.aws_iam_role.ecs_task_execution_role.arn]
-      type = "AWS"
-    }
-    actions = [
-      "secretsmanager:GetSecret",
-      "secretsmanager:GetSecretValue"
-    ]
-    resources = ["*"]
-  }
-}
-
-resource "aws_secretsmanager_secret" "default" {
-  name = var.name
-  policy = data.aws_iam_policy_document.secrets_policy.json
-}
-
-resource "random_id" "secrets_access_policy_suffix" {
+resource "random_id" "policy_suffix" {
   byte_length = 8
 }
 
-resource aws_iam_policy secrets_access {
-  name        = "secrets_access_${random_id.secrets_access_policy_suffix.hex}"
+resource "aws_iam_policy" "this" {
+  name        = "SecretsManagerPolicyForECSTaskExecutionRole-${random_id.policy_suffix.hex}"
   description = "Access rights to SecretsManager Secret created by terraform-aws-ecs-secrets-manager module"
 
-  policy = <<-POLICY
-  {
-     "Version": "2012-10-17",
-     "Statement": [
-         {
-             "Effect": "Allow",
-             "Action": [
-                 "secretsmanager:GetResourcePolicy",
-                 "secretsmanager:GetSecretValue",
-                 "secretsmanager:DescribeSecret",
-                 "secretsmanager:ListSecretVersionIds"
-             ],
-             "Resource": [
-               "${aws_secretsmanager_secret.default.arn}"
-             ]
-         }
-     ]
-  }
-  POLICY
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+        Resource = [
+          aws_secretsmanager_secret.this.arn
+        ]
+      }
+    ]
+  })
 }
 
-resource aws_iam_role_policy_attachment secret_access {
-  role       = var.ecs_task_execution_role
-  policy_arn = aws_iam_policy.secrets_access.arn
+resource "aws_iam_role_policy_attachment" "this" {
+  for_each   = toset(var.ecs_task_execution_roles)
+  role       = each.value
+  policy_arn = aws_iam_policy.this.arn
 }
 
 locals {
   ecs_secrets = [
     for key_name in var.key_names :{
       name = key_name
-      valueFrom = "${aws_secretsmanager_secret.default.arn}:${key_name}::"
+      valueFrom = "${aws_secretsmanager_secret.this.arn}:${key_name}::"
     }
   ]
 }
