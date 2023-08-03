@@ -10,9 +10,13 @@ This module uses the recommended way of passing sensitive data from SecretManage
 module "secrets" {
   source  = "exlabs/ecs-secrets-manager/aws"
   # We recommend pinning every module to a specific version
-  # version     = "x.x.x"
-  name = "data-pipeline-secrets"
-  ecs_task_execution_role = "ecs-task-execution-role"
+  version = "1.0.0"
+  name    = "data-pipeline-secrets"
+
+  ecs_task_execution_roles = [
+    "ecs-task-execution-role1",
+    "ecs-task-execution-role2"
+  ]
 
   key_names = [
     "STRIPE_PUBLIC_KEY",
@@ -24,14 +28,12 @@ module "secrets" {
 resource "aws_ecs_task_definition" "data_pipeline" {
   #...
 
-  container_definitions = <<TASK_DEFINITION
-  [
+  container_definitions = jsonencode([
     {
-      "secrets": ${jsonencode(module.secrets.ecs_secrets)},
+      secrets = module.secrets.ecs_secrets,
       #...
     }
-  ]
-  TASK_DEFINITION
+  ])
 }
 ```
 
@@ -62,20 +64,19 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [aws_iam_policy.secrets_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
-| [random_id.secrets_access_policy_suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
-| [aws_iam_role_policy_attachment.secret_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_secretsmanager_secret.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
-| [aws_iam_policy_document.secrets_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_role.ecs_task_execution_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_role) | data source |
+| [aws_iam_policy.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [random_id.policy_suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
+| [aws_iam_role_policy_attachment.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_secretsmanager_secret.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_ecs_task_execution_role"></a> [ecs\_task\_execution\_role](#input\_ecs\_task\_execution\_role) | ECS task execution role name | `string` | n/a | yes |
-| <a name="input_key_names"></a> [key\_names](#input\_key\_names) | Secret names that will be injected as env variables | `list(string)` | n/a | yes |
+| <a name="input_ecs_task_execution_roles"></a> [ecs\_task\_execution\_roles](#input\_ecs\_task\_execution\_roles) | ECS task execution role names | `list(string)` | `[]` | yes |
+| <a name="input_key_names"></a> [key\_names](#input\_key\_names) | Secret names that will be injected as env variables | `list(string)` | `[]` | yes |
 | <a name="input_name"></a> [name](#input\_name) | AWS SecretsManager secret name | `string` | n/a | yes |
+| <a name="input_description"></a> [description](#input\_description) | AWS SecretsManager secret description | `string` | n/a | no |
 
 ## Outputs
 
