@@ -34,9 +34,14 @@ resource "aws_iam_role_policy_attachment" "this" {
 }
 
 locals {
-  ecs_secrets = [
+  ecs_secrets = var.enable_secret_assigned_to_single_key ? [
+    {
+      name      = coalesce(one(var.key_names), upper(replace(replace(var.name,"/[^a-zA-Z\\d\\-_:]/","*"),"-","_")))
+      valueFrom = aws_secretsmanager_secret.this.arn
+    }
+  ] : [
     for key_name in var.key_names :{
-      name = key_name
+      name      = key_name
       valueFrom = "${aws_secretsmanager_secret.this.arn}:${key_name}::"
     }
   ]

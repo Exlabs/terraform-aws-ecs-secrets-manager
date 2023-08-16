@@ -6,11 +6,12 @@ This module uses the recommended way of passing sensitive data from SecretManage
 
 ## Usage
 
+### Passing specific keys to ECS task definition
 ```hcl
 module "secrets" {
   source  = "exlabs/ecs-secrets-manager/aws"
   # We recommend pinning every module to a specific version
-  version = "1.0.0"
+  version = "1.1.0"
   name    = "data-pipeline-secrets"
 
   ecs_task_execution_roles = [
@@ -22,6 +23,39 @@ module "secrets" {
     "STRIPE_PUBLIC_KEY",
     "STRIPE_SECRET_KEY",
     "STRIPE_WEBHOOK_SECRET"
+  ]
+}
+
+resource "aws_ecs_task_definition" "data_pipeline" {
+  #...
+
+  container_definitions = jsonencode([
+    {
+      secrets = module.secrets.ecs_secrets,
+      #...
+    }
+  ])
+}
+```
+
+### Passing the whole AWS Secret Manager secret to the ECS task as a single variable
+```hcl
+module "secrets" {
+  source  = "exlabs/ecs-secrets-manager/aws"
+  # We recommend pinning every module to a specific version
+  version = "1.1.0"
+  name    = "data-pipeline-secrets"
+
+  enable_secret_assigned_to_single_key = true
+
+  ecs_task_execution_roles = [
+    "ecs-task-execution-role1",
+    "ecs-task-execution-role2"
+  ]
+
+  # You can define your own key or leave it default then the key name is built based on the secret name
+  key_names = [
+    "YOUR_OWN_KEY"
   ]
 }
 
@@ -77,10 +111,12 @@ No modules.
 | <a name="input_key_names"></a> [key\_names](#input\_key\_names) | Secret names that will be injected as env variables | `list(string)` | `[]` | yes |
 | <a name="input_name"></a> [name](#input\_name) | AWS SecretsManager secret name | `string` | n/a | yes |
 | <a name="input_description"></a> [description](#input\_description) | AWS SecretsManager secret description | `string` | n/a | no |
+| <a name="input_enable_secret_assigned_to_single_key"></a> [enable\_secret\_assigned\_to\_single\_key](#input\_enable\_secret\_assigned\_to\_single\_key) | Enables returning the whole secret as a single key-value pair | `string` | `false` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | <a name="output_ecs_secrets"></a> [ecs\_secrets](#output\_ecs\_secrets) | Secrets description to be injected in the ECS Container definition. |
+| <a name="output_secretsmanager_secret_arn"></a> [secretsmanager\_secret\_arn](#output\_secretsmanager\_secret\_arn) | AWS SecretsManager secret ARN |
 <!-- END_TF_DOCS -->
