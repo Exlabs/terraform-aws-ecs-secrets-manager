@@ -23,3 +23,10 @@ variable "key_names" {
   nullable    = false
   default     = []
 }
+
+variable "enable_secret_assigned_to_single_key" {
+  description = "Enables returning the whole secret as a single key-value pair"
+  type        = bool
+  nullable    = false
+  default     = false
+}
